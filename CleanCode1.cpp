@@ -13,7 +13,7 @@ int main()
 			double time = 0;
 			std::cin >> time;
 			double speed = (distance / time);
-			std::cout << "Вам нужно ехать со скоростью " << speed << " км в ч."; */
+			std::cout << "Вам нужно ехать со скоростью " << speed << " км в ч."; 
 			// 2 ЗАДАЧА
 			 std::cout << "Здравствуйте, введите время начала поездки, например 19:45:32 нижe \n";
 			int hourse = 0;
