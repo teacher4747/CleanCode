@@ -1,254 +1,163 @@
-﻿#include <iostream>  
+﻿#include <iostream>    
 #include <iomanip>
 #include <string>
 #include <cctype>
 #include <windows.h>
+#include <cstdlib>
+#include <ctime> 
 
 using namespace std;
 
-const int VAGONS = 18;
-const int SEATS = 36;
+const int MAX_SIZE = 1000; 
 
-// Заполнение нулями
-void FillWithZero(int train[VAGONS][SEATS])
+// Созадть массив
+int* CreateArray(int size)
 {
-	for (int v = 0; v < VAGONS; v++)
-	{
-		for (int s = 0; s < SEATS; s++) 
-		{
-			train[v][s] = 0;
-		}
-	}
+    int* array = new int[size];
+    return array;
 }
 
-// Заполнение на рандом
-void RandomSeats(int train[VAGONS][SEATS])
+// Инициализировать массив
+void FillArray(int* array, int size)
+{  
+    for (int i = 0; i < size; i++)
+    {
+        array[i] = rand() % 10;
+    }
+}
+
+// Вывести массив 
+void PrintArray(int* array, int size)
 {
-	for (int v = 0; v < VAGONS; v++)
-	{
-		for (int s = 0; s < SEATS; s++)
-		{
-			train[v][s] = rand() % 2; 
-		}
-	}
+    if (array == nullptr || size == 0)
+    {
+        cout << "Массив пуст!\n";
+        return;
+    }
+    cout << "\nМассив [" << size << " элементов]:\n";
+    for (int i = 0; i < size; i++) {
+        cout << "[" << i << "] = " << array[i] << endl;
+    }
 }
 
+// Меню 
+void ArrayMenu() {
+    cout << "\n=== ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ===\n";
+    cout << "1. Удаление массива\n";
+    cout << "2. Изменить последний элемент массива\n";
+    cout << "3. Показать массив\n";
+    cout << "4. Выход\n";
+    cout << "Выберите действие: ";
+}
 
-// Забронить место
-bool ReverseSeat(int train[VAGONS][SEATS], int vagon, int seat)
+// Удалить массив 
+void DeleteArray(int*& array, int& size)
 {
-	if (vagon < 1 || vagon > VAGONS || seat < 1 || seat >> SEATS)
-	{
-		cout << "Неверный номер вагона или место \n"; 
-		return false; 
-	}
-
-	int  v = vagon - 1; 
-	int s = seat - 1;
-
-	if (train[v][s] = 0)
-	{
-		train[v][s] = 1; 
-		cout << "Место" << seat << "в вагоне" << vagon << " теперь забранировано вами \n"; 
-		return true; 
-	}
-	else
-	{
-		cout << "Это место уже забронировано кем-то другим \n"; 
-		return false; 
-	}
+    if (array != nullptr)
+    {
+        delete[] array;
+        array = nullptr;
+        size = 0;
+        cout << "Массив успешно удалён.\n";
+    }
+    else 
+    {
+        cout << "Массив уже пуст или не был создан.\n";
+    }
 }
 
-// Освободить место
-bool FreeSeatSpecialForYou(int train[VAGONS][SEATS], int vagon, int seat)
+// Поменять последнее число 
+void SetLastElement(int* array, int size, int newDigit)
 {
-	if (vagon < 1 || vagon > VAGONS || seat < 1 || seat >> SEATS)
-	{
-		cout << "Неверный номер вагона или место \n";
-		return false;
-	}
-
-	int  v = vagon - 1;
-	int s = seat - 1;
-
-	if (train[v][s] = 1)
-	{
-		train[v][s] = 0;
-		cout << "Место" << seat << "в вагоне" << vagon << "освобождено \n";
-		return true;
-	}
-	else
-	{
-		cout << "Место уже свободно \n";
-		return false;
-	}
+    if (size > 0)
+    {
+        cout << "\nМеняем последний элемент с " << array[size - 1]
+            << " на " << newDigit << endl;
+        array[size - 1] = newDigit;
+        PrintArray(array, size);
+    }
+    else 
+    {
+        cout << "Ошибка: массив пуст!\n";
+    }
 }
 
-
-// Места в свободном вагоне
-int FreeInVagon(int train[VAGONS][SEATS], int vagonNumber) {
-	
-	int count = 0;
-	int v = vagonNumber - 1; 
-
-	for (int seat = 0; seat < SEATS; seat++) {
-		if (train[v][seat] == 0) {
-			count++;
-		}
-	}
-	return count;
-}
-
-// Все свободные места
-int TotalFree(int train[VAGONS][SEATS])
+int main() 
 {
-	int total = 0;
+    srand(time(0));
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    setlocale(LC_ALL, "RUS");
 
-	for (int vagon = 0; vagon < VAGONS; vagon++)
-	{
-		for (int seat = 0; seat < SEATS; seat++) 
-		{
-			if (train[vagon][seat] == 0) 
-			{
-				total++;
-			}
-		}
-	}
-	return total;
-}
+    int size = 0;
+    int* myArray = nullptr;
 
-// Места во всем поезде
-void DisplayTrain(int train[VAGONS][SEATS])
-{
-	cout << "\n=== СОСТОЯНИЕ ПОЕЗДА ===\n";
+    
+    cout << "=== СОЗДАНИЕ МАССИВА ===\n";
+    cout << "Введите размер массива: ";
+    cin >> size;
 
-	for (int v = 0; v < VAGONS; v++)
-	{
-		cout << "Вагон " << (v + 1) << ": ";
+    if (size <= 0 || size > MAX_SIZE) 
+    {
+        cout << "Неверный размер!\n";
+        return 1;
+    }
 
-		for (int s = 0; s < SEATS; s++)
-		{
-			if (train[v][s] == 0)
-			{
-				cout << "O "; 
-			}
-			else
-			{
-				cout << "X "; 
-			}
-		}
-		cout << endl;
-	}
-	cout << "O - свободно, X - занято\n";
-}
+    myArray = CreateArray(size);
+    FillArray(myArray, size);
 
+    cout << "\nСоздан массив на " << size << " элементов\n";
+    PrintArray(myArray, size);
 
-// Главное меню. 
-void ShowMenu() {
-	cout << "\n=== СИСТЕМА БРОНИРОВАНИЯ ===\n";
-	cout << "1. Забронировать место\n";
-	cout << "2. Освободить место\n";
-	cout << "3. Показать свободные места в вагоне\n";
-	cout << "4. Показать все свободные места\n";
-	cout << "5. Отобразить весь поезд\n";
-	cout << "6. Выйти\n";
-	cout << "Выберите действие: ";
+    
+    while (true)
+    {
+        ArrayMenu();
+        int choice;
+        cin >> choice;
 
-}
+        if (choice == 1)
+        {
+           
+            DeleteArray(myArray, size);
+        }
+        else if (choice == 2) 
+        {
+            
+            if (size > 0)
+            {
+                int digit;
+                cout << "Введите новое значение для последнего элемента: ";
+                cin >> digit;
+               SetLastElement(myArray, size, digit);
+            }
+            else 
+            {
+                cout << "Массив пуст! Сначала создайте массив.\n";
+            }
+        }
+        else if (choice == 3) 
+        {
+            
+            PrintArray(myArray, size);
+        }
+        else if (choice == 4) 
+        {
+           
+            cout << "Выход из программы...\n";
+            break;
+        }
+        else 
+        
+        {
+            cout << "Неверный выбор! Попробуйте снова.\n";
+        }
+    }
 
+    if (myArray != nullptr) 
+    {
+        delete[] myArray;
+    }
 
-
-int main()
-{
-	SetConsoleCP(1251); 
-	SetConsoleOutputCP(1251); 
-	setlocale(LC_ALL, "RUS");
-
-	
-
-	int train[VAGONS][SEATS]; 
-	int choise; 
-
-	cout << "Выберите режим заполнения \n "; 
-	cout << "1. Рандомное заполнение \n";
-	cout << "2. Все места пусты\n";
-	cin >> choise; 
-	
-	if (choise == 1)
-	{
-		RandomSeats(train); 
-	}
-	else
-	{
-		FillWithZero(train); 
-	}
-	while (true)
-	{ 
-	ShowMenu(); 
-	int choice2 = 0; 
-	cin >> choice2; 
-
-	if (choice2 == 1)
-	{
-		int vagon, seat;
-		cout << "Введите номер вагона (1-" << VAGONS << "): ";
-		cin >> vagon;
-		cout << "Введите номер места (1-" << SEATS << "): ";
-		cin >> seat;
-
-		ReverseSeat(train, vagon, seat);
-	}
-	else if (choice2 == 2)
-	{
-		int vagon1, seat1;
-		cout << "Введите номер вагона (1-" << VAGONS << "): ";
-		cin >> vagon1;
-		cout << "Введите номер места (1-" << SEATS << "): ";
-		cin >> seat1;
-
-		FreeSeatSpecialForYou(train, vagon1, seat1);
-
-	}
-
-	else if (choice2 == 3)
-	{
-		int vagonNum;
-		cout << "Введите номер вагона: ";
-		cin >> vagonNum;
-
-		int free = FreeInVagon(train, vagonNum);
-		if (free == -1)
-		{
-			cout << "Ошибка!\n";
-		}
-		else
-		{
-			cout << "Свободных мест: " << free << endl;
-		}
-	}
-
-	else if (choice2 == 4)
-	{
-		int allFree = TotalFree(train);
-		cout << "Всего свободных мест в поезде: " << allFree << endl;
-	}
-
-	else if (choice2 == 5)
-	{
-		DisplayTrain(train);
-	}
-
-	else if (choice2 == 6)
-	{
-		break; 
-	}
-	else
-	{
-		cout << "Ошибка: выберите 1-6\n";
-	}
-}
-	cout << "Программа завершена.\n";
-
-
-
+    return 0;
 }
